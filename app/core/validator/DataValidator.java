@@ -42,6 +42,10 @@ public class DataValidator implements IValidator {
 			return false;
 		}
 
+		if (!validateNext(response, getData(request, "next"))) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -80,6 +84,10 @@ public class DataValidator implements IValidator {
 		}
 
 		if (!validatePeriod(response, getData(request, "start"), getData(request, "end"))) {
+			return false;
+		}
+
+		if (!validateNext(response, getData(request, "next"))) {
 			return false;
 		}
 
@@ -212,6 +220,28 @@ public class DataValidator implements IValidator {
 
 		if (startDate.compareTo(endDate) > 0) {
 			response.put("error", "bad period");
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates next value
+	 * 
+	 * @param response
+	 *            response to return
+	 * @param next
+	 *            next value
+	 * @return if value is empty return false otherwise true
+	 */
+	public final boolean validateNext(final ObjectNode response, final String next) {
+		if (next == null) {
+			return true;
+		}
+
+		if (next.length() == 0) {
+			response.put("error", "bad next value");
 			return false;
 		}
 

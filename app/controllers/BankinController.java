@@ -45,16 +45,13 @@ public class BankinController extends AbstractController {
 
 		}
 
-		System.out.println(request);
 		return service.getAllTransactions(request, response).thenApply(r -> {
 			if (!r.hasNonNull("transactions")) {
 				return badRequest(r);
 			}
 
-			System.out.println("-----------------------");
-			System.out.println(r);
 			for (int i = 0; i < r.get("transactions").size(); i += 1) {
-				setRoundToTransaction(r.get("transactions").get(i));
+				RoundService.setRoundToTransaction(r.get("transactions").get(i));
 			}
 
 			return ok(r);
@@ -73,30 +70,16 @@ public class BankinController extends AbstractController {
 		ObjectNode response = JsonNodeFactory.instance.objectNode();
 
 		if (!validator.validateRequestPeriod(response, request)) {
-			return CompletableFuture.completedFuture(ok(response));
+			return CompletableFuture.completedFuture(badRequest(response));
 
 		}
 
 		return service.getAllTransactionsForPeriod(request, response).thenApply(r -> {
 			for (int i = 0; i < r.get("transactions").size(); i += 1) {
-				setRoundToTransaction(r.get("transactions").get(i));
+				RoundService.setRoundToTransaction(r.get("transactions").get(i));
 			}
 
 			return ok(r);
 		});
-	}
-
-	/**
-	 * Applies round to transaction
-	 * 
-	 * @param transaction
-	 *            transaction
-	 */
-	public final void setRoundToTransaction(JsonNode transaction) {
-		if (transaction.get("amount").asDouble() >= 0) {
-			return;
-		}
-
-		((ObjectNode) transaction).put("arrondi", RoundService.get(-transaction.get("amount").asDouble()));
 	}
 }

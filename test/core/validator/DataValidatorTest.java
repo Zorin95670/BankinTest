@@ -46,6 +46,17 @@ public class DataValidatorTest {
 		response = JsonNodeFactory.instance.objectNode();
 		Assert.assertTrue("6a", validator.validateRequestAll(response, data));
 		Assert.assertFalse("6b", response.hasNonNull("error"));
+		
+		data.put("next", "");
+		response = JsonNodeFactory.instance.objectNode();
+		Assert.assertFalse("7a", validator.validateRequestAll(response, data));
+		Assert.assertTrue("7b", response.hasNonNull("error"));
+		Assert.assertEquals("7c", "bad next value", response.get("error").asText());
+		
+		data.put("next", "a");
+		response = JsonNodeFactory.instance.objectNode();
+		Assert.assertTrue("8a", validator.validateRequestAll(response, data));
+		Assert.assertFalse("8b", response.hasNonNull("error"));
 	}
 
 	@Test
@@ -113,6 +124,17 @@ public class DataValidatorTest {
 		response = JsonNodeFactory.instance.objectNode();
 		Assert.assertTrue("11a", validator.validateRequestPeriod(response, data));
 		Assert.assertFalse("11b", response.hasNonNull("error"));
+		
+		data.put("next", "");
+		response = JsonNodeFactory.instance.objectNode();
+		Assert.assertFalse("12a", validator.validateRequestPeriod(response, data));
+		Assert.assertTrue("12b", response.hasNonNull("error"));
+		Assert.assertEquals("12c", "bad next value", response.get("error").asText());
+		
+		data.put("next", "a");
+		response = JsonNodeFactory.instance.objectNode();
+		Assert.assertTrue("13a", validator.validateRequestPeriod(response, data));
+		Assert.assertFalse("13b", response.hasNonNull("error"));
 	}
 
 	@Test

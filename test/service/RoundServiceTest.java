@@ -3,10 +3,13 @@ package service;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class RoundServiceTest {
 
 	private static double DELTA = 1e-2;
-	
+
 	@Test
 	public final void getTest() {
 		Assert.assertEquals("1", 1.00f, RoundService.get(1.00f), DELTA);
@@ -19,5 +22,23 @@ public class RoundServiceTest {
 		Assert.assertEquals("8", 20.00f, RoundService.get(19.00f), DELTA);
 		Assert.assertEquals("8", 60.00f, RoundService.get(57.00f), DELTA);
 		Assert.assertEquals("8", 58.00f, RoundService.get(57.01f), DELTA);
+	}
+
+	@Test
+	public void setRoundToTransactionTest() {
+		ObjectNode transaction = JsonNodeFactory.instance.objectNode();
+		transaction.put("amount", 1.00f);
+		RoundService.setRoundToTransaction(transaction);
+		Assert.assertFalse("1", transaction.hasNonNull("round"));
+
+		transaction = JsonNodeFactory.instance.objectNode();
+		transaction.put("amount", 0.00f);
+		RoundService.setRoundToTransaction(transaction);
+		Assert.assertFalse("2", transaction.hasNonNull("round"));
+
+		transaction = JsonNodeFactory.instance.objectNode();
+		transaction.put("amount", -1.00f);
+		RoundService.setRoundToTransaction(transaction);
+		Assert.assertTrue("3", transaction.hasNonNull("round"));
 	}
 }

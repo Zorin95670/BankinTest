@@ -1,5 +1,8 @@
 package service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 /**
  * Service to manage round api
  * 
@@ -42,5 +45,19 @@ public final class RoundService {
 		}
 
 		return round;
+	}
+
+	/**
+	 * Applies round to transaction
+	 * 
+	 * @param transaction
+	 *            transaction
+	 */
+	public final static void setRoundToTransaction(JsonNode transaction) {
+		if (transaction.get("amount").asDouble() >= 0) {
+			return;
+		}
+
+		((ObjectNode) transaction).put("round", get(-transaction.get("amount").asDouble()));
 	}
 }
